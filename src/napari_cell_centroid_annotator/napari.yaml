@@ -1,0 +1,41 @@
+name: napari-cell-centroid-annotator
+display_name: 3D cell centroid annotator
+contributions:
+  commands:
+    - id: napari-cell-centroid-annotator.get_reader
+      python_name: napari_cell_centroid_annotator._reader:napari_get_reader
+      title: Open data with 3D cell centroid annotator
+    - id: napari-cell-centroid-annotator.write_multiple
+      python_name: napari_cell_centroid_annotator._writer:write_multiple
+      title: Save multi-layer data with 3D cell centroid annotator
+    - id: napari-cell-centroid-annotator.write_single_image
+      python_name: napari_cell_centroid_annotator._writer:write_single_image
+      title: Save image data with 3D cell centroid annotator
+    - id: napari-cell-centroid-annotator.make_qwidget
+      python_name: napari_cell_centroid_annotator._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: napari-cell-centroid-annotator.make_magic_widget
+      python_name: napari_cell_centroid_annotator._widget:example_magic_widget
+      title: Make example magic widget
+    - id: napari-cell-centroid-annotator.make_func_widget
+      python_name: napari_cell_centroid_annotator._widget:example_function_widget
+      title: Make example function widget
+  readers:
+    - command: napari-cell-centroid-annotator.get_reader
+      accepts_directories: false
+      filename_patterns: ['*.npy']
+  writers:
+    - command: napari-cell-centroid-annotator.write_multiple
+      layer_types: ['image*','labels*']
+      filename_extensions: []
+    - command: napari-cell-centroid-annotator.write_single_image
+      layer_types: ['image']
+      filename_extensions: ['.npy']
+  widgets:
+    - command: napari-cell-centroid-annotator.make_qwidget
+      display_name: Example QWidget
+    - command: napari-cell-centroid-annotator.make_magic_widget
+      display_name: Example Magic Widget
+    - command: napari-cell-centroid-annotator.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget
