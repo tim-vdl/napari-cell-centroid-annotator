@@ -8,39 +8,29 @@ Replace code below according to your needs.
 """
 from typing import TYPE_CHECKING
 
-from magicgui import magic_factory
-from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
+import numpy as np
 
 if TYPE_CHECKING:
     import napari
 
 
-class ExampleQWidget(QWidget):
-    # your QWidget.__init__ can optionally request the napari viewer instance
-    # in one of two ways:
-    # 1. use a parameter called `napari_viewer`, as done here
-    # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
-    def __init__(self, napari_viewer):
-        super().__init__()
-        self.viewer = napari_viewer
-
-        btn = QPushButton("Click me!")
-        btn.clicked.connect(self._on_click)
-
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(btn)
-
-    def _on_click(self):
-        print("napari has", len(self.viewer.layers), "layers")
-
-
-@magic_factory
-def example_magic_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
-
-
 # Uses the `autogenerate: true` flag in the plugin manifest
 # to indicate it should be wrapped as a magicgui to autogenerate
 # a widget.
-def example_function_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+def annotate_centroids_widget(points_layer: "napari.layers.Points"):
+    points_layer.out_of_slice_display = (
+        True if points_layer.data.shape[1] == 3 else False
+    )
+    points_layer.point_size = 10
+    points_layer.current_face_color = np.random.random((1, 3))
+    points_layer.metadata["n_points"] = points_layer.data.shape[0]
+
+    @points_layer.events.set_data.connect
+    def on_data_change():
+        if points_layer.metadata["n_points"] + 1 == points_layer.data.shape[0]:
+            points_layer.metadata["n_points"] += 1
+            points_layer.current_face_color = np.random.random((1, 3))
+        elif (
+            points_layer.metadata["n_points"] - 1 == points_layer.data.shape[0]
+        ):
+            points_layer.metadata["n_points"] -= 1

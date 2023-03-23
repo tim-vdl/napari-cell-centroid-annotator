@@ -4,13 +4,6 @@ except ImportError:
     __version__ = "unknown"
 
 from ._reader import napari_get_reader
-from ._widget import ExampleQWidget, example_magic_widget
-from ._writer import write_multiple, write_single_image
+from ._widget import annotate_centroids_widget
 
-__all__ = (
-    "napari_get_reader",
-    "write_single_image",
-    "write_multiple",
-    "ExampleQWidget",
-    "example_magic_widget",
-)
+__all__ = ("napari_get_reader", "annotate_centroids_widget")

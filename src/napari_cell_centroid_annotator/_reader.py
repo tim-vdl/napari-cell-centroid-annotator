@@ -5,7 +5,11 @@ It implements the Reader specification, but your plugin may choose to
 implement multiple readers or even other plugin contributions. see:
 https://napari.org/stable/plugins/guides.html?#readers
 """
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
+import tifffile
 
 
 def napari_get_reader(path):
@@ -22,51 +26,58 @@ def napari_get_reader(path):
         If the path is a recognized format, return a function that accepts the
         same path or list of paths, and returns a list of layer data tuples.
     """
-    if isinstance(path, list):
-        # reader plugins may be handed single path, or a list of paths.
-        # if it is a list, it is assumed to be an image stack...
-        # so we are only going to look at the first file.
-        path = path[0]
+    if isinstance(path, str):
+        path = Path(path)
 
     # if we know we cannot read the file, we immediately return None.
-    if not path.endswith(".npy"):
+    if path.suffix in [".tif", ".tiff"]:
+        return img_reader_function
+    elif path.suffix in [".npy", ".csv"]:
+        return points_reader_function
+    else:
         return None
 
-    # otherwise we return the *function* that can read ``path``.
-    return reader_function
 
+def img_reader_function(path):
+    """Reader function for our supported image types."""
+    path = Path(path)
+    if path.suffix not in [".tif", ".tiff"]:
+        raise ValueError("File must be a tiff file")
 
-def reader_function(path):
-    """Take a path or list of paths and return a list of LayerData tuples.
-
-    Readers are expected to return data as a list of tuples, where each tuple
-    is (data, [add_kwargs, [layer_type]]), "add_kwargs" and "layer_type" are
-    both optional.
-
-    Parameters
-    ----------
-    path : str or list of str
-        Path to file, or list of paths.
-
-    Returns
-    -------
-    layer_data : list of tuples
-        A list of LayerData tuples where each tuple in the list contains
-        (data, metadata, layer_type), where data is a numpy array, metadata is
-        a dict of keyword arguments for the corresponding viewer.add_* method
-        in napari, and layer_type is a lower-case string naming the type of
-        layer. Both "meta", and "layer_type" are optional. napari will
-        default to layer_type=="image" if not provided
-    """
-    # handle both a string and a list of strings
-    paths = [path] if isinstance(path, str) else path
-    # load all files into array
-    arrays = [np.load(_path) for _path in paths]
-    # stack arrays into single array
-    data = np.squeeze(np.stack(arrays))
+    data = tifffile.imread(path)
 
     # optional kwargs for the corresponding viewer.add_* method
-    add_kwargs = {}
+    add_kwargs = {
+        "name": path.stem,
+        "colormap": "gray",
+        "blending": "additive",
+    }
 
     layer_type = "image"  # optional, default is "image"
+    return [(data, add_kwargs, layer_type)]
+
+
+def points_reader_function(path):
+    """Reader function for our supported point types."""
+    path = Path(path)
+    if path.suffix not in [".npy", ".csv"]:
+        raise ValueError("File must be a numpy array or csv file")
+    if path.suffix == ".csv":
+        df = pd.read_csv(path, header=0)
+        data = df[["axis-0", "axis-1", "axis-2"]].values
+        data = data.astype(float)
+    else:
+        data = np.load(path).astype(float)
+
+    # optional kwargs for the corresponding viewer.add_* method
+    add_kwargs = {
+        "name": path.stem,
+        "size": 10,
+        "symbol": "disc",
+        "face_color": np.random.random((data.shape[0], 3)),
+        "edge_color": "black",
+        "out_of_slice_display": True if data.shape[1] == 3 else False,
+    }
+
+    layer_type = "points"  # optional, default is "image"
     return [(data, add_kwargs, layer_type)]
