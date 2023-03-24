@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/tim-vdl/napari-cell-centroid-annotator/branch/main/graph/badge.svg)](https://codecov.io/gh/tim-vdl/napari-cell-centroid-annotator)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-cell-centroid-annotator)](https://napari-hub.org/plugins/napari-cell-centroid-annotator)
 
-A simple plugin to annotate cell centroids in 3D images
+A simple plugin to annotate cell centroids in 2D or 3D images
 
 ----------------------------------
 
@@ -20,6 +20,11 @@ https://github.com/napari/cookiecutter-napari-plugin#getting-started
 and review the napari docs for plugin developers:
 https://napari.org/stable/plugins/index.html
 -->
+## Short discription
+Easily annotate cell centroids in 2D/3D images. While annotating, every annotated point gets a random color to increase your focus and overview while annotating. Annotated points get a radius to make it easier to see which cells were already annotated when you are in a neighboring slice of its centroid.
+
+![3D image with annotated centroids](./imgs/3D_stack.png)
+![Sequence of slices 3D image with annotated centroids](./imgs/3D_stack_slices.gif)
 
 ## Installation
 
@@ -28,11 +33,37 @@ You can install `napari-cell-centroid-annotator` via [pip]:
     pip install napari-cell-centroid-annotator
 
 
-
 To install latest development version :
 
     pip install git+https://github.com/tim-vdl/napari-cell-centroid-annotator.git
 
+While strictly not required, it is recommended to install this plug-in into a virtual environment, like this:
+
+```sh
+conda create -y -n napari-env -c conda-forge python=3.9
+conda activate napari-env
+pip install napari-cell-centroid-annotator
+```
+
+## Usage
+
+Get started by importing a 2D/3D image, either by drag-and-drop into the viewer, or via the menu on top. Next, create a new or import an existing points layer.
+
+Then, start the Centroid Annotation Widget from the Plug-in menu.
+
+![Start the plug-in](./imgs/start-plug-in.png)
+
+Afterwards, select the points layer in the widget that opened on the right and click "Run" to confirm to use this layer for centroid annotation.
+
+![Run the plug-in](./imgs/run-plug-in.png)
+
+Finally, you can start annotating by adding new points, or by editing the existing points.
+
+![Run the plug-in](./imgs/add-points.png)
+
+To get an overview of all annotated points, be sure to have the points layer selected in the layer list and open the [Points Table plug-in](https://www.napari-hub.org/plugins/napari-layer-table) from the Plug-in menu. This plug-in opens a table with the face color and coordinates of every point. From the table, you can now select points in the viewer, and vice-versa. This can come in handy when you want to edit/remove some points.
+
+![Table overview](./imgs/points-table-plug-in.png)
 
 ## Contributing
 
