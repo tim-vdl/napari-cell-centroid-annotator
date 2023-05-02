@@ -45,12 +45,14 @@ def img_reader_function(path):
         raise ValueError("File must be a tiff file")
 
     data = tifffile.imread(path)
+    ndim = data.ndim
 
     # optional kwargs for the corresponding viewer.add_* method
     add_kwargs = {
         "name": path.stem,
         "colormap": "gray",
         "blending": "additive",
+        "order": (1, 0, 2, 3) if ndim == 4 else (0, 1, 2)
     }
 
     layer_type = "image"  # optional, default is "image"
