@@ -52,7 +52,7 @@ def img_reader_function(path):
         "name": path.stem,
         "colormap": "gray",
         "blending": "additive",
-        "order": (1, 0, 2, 3) if ndim == 4 else (0, 1, 2)
+        "channel_axis": 1 if ndim == 4 else None
     }
 
     layer_type = "image"  # optional, default is "image"
